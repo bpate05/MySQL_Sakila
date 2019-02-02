@@ -183,10 +183,6 @@ WHERE name = "Family"
 );
 
 # 7e. Display the most frequently rented movies in descending order.
-SELECT* FROM film;
-SELECT* FROM inventory;
-SELECT* FROM rental;
-
 SELECT film.title, COUNT(rental.rental_id) AS `# of Rentals`
 FROM film
 JOIN inventory ON
@@ -197,20 +193,17 @@ GROUP BY film.title
 ORDER BY `# of Rentals` DESC;
 
 # 7f. Write a query to display how much business, in dollars, each store brought in.
-SELECT * FROM store;
-SELECT * FROM inventory;
-SELECT * FROM rental;
-SELECT * FROM payment;
-SELECT * FROM customer;
-SELECT * FROM staff;
+# There are multiple ways to solve this problem. The start and end tables must be store and payment, in-between you can join
+# on customer, store, or inventory and rental and connect store and payment. Each join pattern yields different sums for the two stores.
+# In this case, the store_id and staff_id and the same and the first query below yields the correct totals. I matched this with the pattern that yielded
+# the same results (payment-> staff -> store).
 
-SELECT store.store_id, SUM(payment.amount) AS 'Store Sales Total'
-FROM store
-JOIN customer ON
-store.store_id = customer.store_id
-JOIN payment ON
-customer.customer_id = payment.customer_id
-GROUP BY store.store_id;
+
+SELECT SUM(payment.amount) 
+FROM payment 
+JOIN staff 
+WHERE payment.staff_id = staff.staff_id 
+GROUP BY staff.staff_id;
 
 SELECT store.store_id, SUM(payment.amount) AS 'Store Sales Total'
 FROM store
@@ -218,16 +211,6 @@ JOIN staff ON
 store.store_id = staff.store_id
 JOIN payment ON
 staff.staff_id = payment.staff_id
-GROUP BY store.store_id;
-
-SELECT store.store_id, SUM(payment.amount) AS 'Store Sales Total'
-FROM store
-JOIN inventory ON
-store.store_id = inventory.store_id
-JOIN rental ON
-inventory.inventory_id = rental.inventory_id
-JOIN payment ON
-rental.rental_id = payment.rental_id
 GROUP BY store.store_id;
 
 # 7g. Write a query to display for each store its store ID, city, and country.
